@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sndfile.h>
-
+#include "pav_analysis.h"
 #include "vad.h"
 #include "vad_docopt.h"
 
@@ -71,7 +71,8 @@ int main(int argc, char *argv[]) {
   for (i=0; i< frame_size; ++i) buffer_zeros[i] = 0.0F;
 
   frame_duration = (float) frame_size/ (float) sf_info.samplerate;
-  last_state = ST_UNDEF;
+  t = last_t=0;
+  last_state = ST_SILENCE; 
 
   for (t = last_t = 0; ; t++) { /* For each frame ... */
     /* End loop when file has finished (or there is an error) */
@@ -79,25 +80,32 @@ int main(int argc, char *argv[]) {
 
     if (sndfile_out != 0) {
       /* TODO: copy all the samples into sndfile_out */
+      sf_write_float(sndfile_out,buffer, n_read);
     }
+
 
     state = vad(vad_data, buffer);
+    
     if (verbose & DEBUG_VAD) vad_show_state(vad_data, stdout);
-
-    /* TODO: print only SILENCE and VOICE labels */
-    /* As it is, it prints UNDEF segments but is should be merge to the proper value */
     if (state != last_state) {
-      if (t != last_t)
-        fprintf(vadfile, "%.5f\t%.5f\t%s\n", last_t * frame_duration, t * frame_duration, state2str(last_state));
+      if(last_state == ST_VOICE || last_state == ST_SILENCE){
+        if (t != last_t)
+          fprintf(vadfile, "%.5f\t%.5f\t%s\n", last_t * frame_duration, t * frame_duration, state2str(last_state));
+        last_t = t;
+      }
       last_state = state;
-      last_t = t;
+      if(state == ST_VOICE || state == ST_SILENCE){
+        if (t != last_t)
+          fprintf(vadfile, "%.5f\t%.5f\t%s\n", last_t * frame_duration, t * frame_duration, state2str(last_state));
+        last_t = t;
+      }
     }
-
-    if (sndfile_out != 0) {
+    if (sndfile_out != 0 && (state == ST_SILENCE || state == ST_UNDEF)) {
       /* TODO: go back and write zeros in silence segments */
+       sf_seek(sndfile_out, -n_read, SEEK_CUR);
+       sf_write_float(sndfile_out,buffer_zeros, n_read);
     }
   }
-
   state = vad_close(vad_data);
   /* TODO: what do you want to print, for last frames? */
   if (t != last_t)
