@@ -52,12 +52,12 @@ VAD_DATA * vad_open(float rate) {
 
   vad_data->power = 0;
   
-  vad_data->p_alpha1 = 5; //Alpha para k1
+  vad_data->p_alpha1 = 6; //Alpha para k1
 
   vad_data->fr_cont = 0; //Contador de los frames .
   
-  vad_data->fr_threshold_silence = 5; //Threshold del límite de veces de silence.
-  vad_data->fr_threshold_voice = 5;  //Threshold del límite de veces de voice.
+  vad_data->fr_threshold_silence = 14; //Threshold del límite de veces de silence.
+  vad_data->fr_threshold_voice = 7;  //Threshold del límite de veces de voice.
 
   return vad_data;
 }
