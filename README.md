@@ -99,32 +99,52 @@ Ejercicios
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
 
+<img src ="Tarea1.png" witdh="640" align="center">
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para estar
       seguros de que un segmento de señal se corresponde con voz.
+	
+*Podemos ver que si sube aproximadamente unos 30dB la señal pasa de ruido/silencio a voz.*
 
 	* Duración mínima razonable de los segmentos de voz y silencio.
 
+*Con una duración mínima de unos 100ms los segmentos de silencio conseguiremos evitar las bajadas de potencia por
+culpa de las fricativas, por ejemplo.
+
+Los segmentos de voz igual, así evitamos posibles deteciciones falsas de voz en ruidos extraños.*
+
 	* ¿Es capaz de sacar alguna conclusión a partir de la evolución de la tasa de cruces por cero?
 
+*No, en nuestro caso uno de los segmentos de voz tiene aproximadamente los mismos cruces por cero que cuando es silencio.
+Pero en cambio el otro tiene muchisimos. Puede sernos útil si la señal tiene muchos sonidos sonoros ya que este dato aumentará
+significativamente y nos podrá ayudar.*
 
 ### Desarrollo del detector de actividad vocal
 
 - Complete el código de los ficheros de la práctica para implementar un detector de actividad vocal tan
   exacto como sea posible. Tome como objetivo la maximización de la puntuación-F `TOTAL`.
 
+	**[Código completado en main_vad.c y en vad.c]**
+
 - Inserte una gráfica en la que se vea con claridad la señal temporal, el etiquetado manual y la detección
   automática conseguida para el fichero grabado al efecto. 
 
+<img src2 ="Tarea2.png" witdh="640" align="center">
+
+*Podemos ver arriba la transcipción manual de la señal, justo debajo el realizado por nuestro programa y 
+al final la señal temporal.*
 
 - Explique, si existen. las discrepancias entre el etiquetado manual y la detección automática.
+
+*Sí, como era de esperar hay discrepancias.Pero muy poco significativas, en general es un buen sistema 
+de detección de voz.* 
 
 - Evalúe los resultados sobre la base de datos `db.v4` con el script `vad_evaluation.pl` e inserte a 
   continuación las tasas de sensibilidad (*recall*) y precisión para el conjunto de la base de datos (sólo
   el resumen).
-
+<img src3 ="Summari.png" witdh="640" align="center">
 
 ### Trabajos de ampliación
 
@@ -144,6 +164,36 @@ Ejercicios
 
 - Indique a continuación si ha realizado algún tipo de aportación suplementaria (algoritmos de detección o 
   parámetros alternativos, etc.).
+1. Decisión del umbral de silencio.
+
+*Hemos hecho uso de un algoritmo que calcula el valor medio de la señal de ruido de las 10 primeras tramas 
+de la señal. Así conseguimos una mejor aproximación del umbral. Lo hemos introduido en justo al principio 
+del programa en el ST_INIT*
+
+'''c
+  static float power_array[10];
+  Features f = compute_features(x, vad_data->frame_length);
+  vad_data->last_feature = f.p; /* save feature, in case you want to show */
+
+  switch (vad_data->state) {
+  case ST_INIT:
+    power_array[vad_data->fr_cont] = vad_data->last_feature;
+    vad_data->fr_cont++;
+    if(vad_data->fr_cont == 10){
+      vad_data->state = ST_SILENCE;
+      for(unsigned int i=0; i<10; i++){
+        vad_data->power += pow(10, power_array[i]/10);
+      }
+      vad_data->power = 10*log10(vad_data->power/10);
+      vad_data->k0 = vad_data->power;
+      vad_data->k1 = vad_data->k0 + vad_data->p_alpha1;
+
+      vad_data->fr_cont = 0;
+      vad_data->power =0;
+    }    
+    break;
+'''
+
 
 - Si lo desea, puede realizar también algún comentario acerca de la realización de la práctica que considere
   de interés de cara a su evaluación.
