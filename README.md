@@ -139,7 +139,9 @@ al final la señal temporal.*
 - Explique, si existen. las discrepancias entre el etiquetado manual y la detección automática.
 
 *Sí, como era de esperar hay discrepancias.Pero muy poco significativas, en general es un buen sistema 
-de detección de voz.* 
+de detección de voz.
+Aunque podemos ver errores cuando hay muchos cruces por cero y el fichero vad se guarda trozos de silencio que no deberian serlo.
+Además vemos que a veces crea dos estados de sielncio en vez de uno, aunque eso no afectará a nuestro resultado final puede generar carga de memoria* 
 
 - Evalúe los resultados sobre la base de datos `db.v4` con el script `vad_evaluation.pl` e inserte a 
   continuación las tasas de sensibilidad (*recall*) y precisión para el conjunto de la base de datos (sólo
@@ -176,7 +178,9 @@ de detección de voz.*
 
 1. Valores de los thresholds del ruido y silencio.
 
-*Después de varias ejecuciones del programa conseguimos depurarlo y encontrar estos valores que daban el mejor resultado posible anuestro detector.*
+*Después de varias ejecuciones del programa conseguimos depurarlo y encontrar estos valores que daban el mejor resultado posible a nuestro detector.
+Además nos centramos en tener un muy buen F-score de voz para evitar errores al igualar a 0 los segmentos de silencio*
+
 ```c
   vad_data->power = 0;
   
@@ -221,7 +225,7 @@ del programa en el ST_INIT*
 3. Cambios en los estados.
 
 *No estabamos del todo satisfechos con los resultados obtenidos al principio una vez implementado el código así que 
-cambiamos las condiciones para decidir cuando cambiar de estado*
+cambiamos las condiciones para decidir cuando cambiar de estado.*
 
 ```c
 case ST_SILENCE:
@@ -269,8 +273,10 @@ case ST_SILENCE:
 ```
 
 4. Printeo de los estados en el fichero .vad
+
 *Decidimos cambiar la manera de printear los estados en el fichero .vad para que se adecuará a los estados 
 que habiamos introucido en vad.c*
+
 ```c
 state = vad(vad_data, buffer);
     
