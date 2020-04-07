@@ -131,7 +131,7 @@ significativamente y nos podrá ayudar.*
 - Inserte una gráfica en la que se vea con claridad la señal temporal, el etiquetado manual y la detección
   automática conseguida para el fichero grabado al efecto. 
 
-<img src2 ="Tarea2.png" witdh="640" align="center">
+<img src ="Tarea2.png" witdh="640" align="center">
 
 *Podemos ver arriba la transcipción manual de la señal, justo debajo el realizado por nuestro programa y 
 al final la señal temporal.*
@@ -144,7 +144,7 @@ de detección de voz.*
 - Evalúe los resultados sobre la base de datos `db.v4` con el script `vad_evaluation.pl` e inserte a 
   continuación las tasas de sensibilidad (*recall*) y precisión para el conjunto de la base de datos (sólo
   el resumen).
-<img src3 ="Summari.png" witdh="640" align="center">
+<img src ="Summari.png" witdh="640" align="center">
 
 ### Trabajos de ampliación
 
@@ -170,7 +170,7 @@ de detección de voz.*
 de la señal. Así conseguimos una mejor aproximación del umbral. Lo hemos introduido en justo al principio 
 del programa en el ST_INIT*
 
-'''c
+```c
   static float power_array[10];
   Features f = compute_features(x, vad_data->frame_length);
   vad_data->last_feature = f.p; /* save feature, in case you want to show */
@@ -192,7 +192,7 @@ del programa en el ST_INIT*
       vad_data->power =0;
     }    
     break;
-'''
+```
 
 
 - Si lo desea, puede realizar también algún comentario acerca de la realización de la práctica que considere
