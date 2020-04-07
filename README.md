@@ -99,17 +99,27 @@ Ejercicios
   continuación, una captura de `wavesurfer` en la que se vea con claridad la señal temporal, el contorno de
   potencia y la tasa de cruces por cero, junto con el etiquetado manual de los segmentos.
 
+<img src ="Tarea1.png" witdh="640" align="center">
 
 - A la vista de la gráfica, indique qué valores considera adecuados para las magnitudes siguientes:
 
 	* Incremento del nivel potencia en dB, respecto al nivel correspondiente al silencio inicial, para estar
       seguros de que un segmento de señal se corresponde con voz.
+	
+Podemos ver que si sube aproximadamente unos 30dB la señal pasa de ruido/silencio a voz.
 
 	* Duración mínima razonable de los segmentos de voz y silencio.
 
+Con una duración mínima de unos 100ms los segmentos de silencio conseguiremos evitar las bajadas de potencia por
+culpa de las fricativas.
+
+Los segmentos de voz igual, asi evitamos posibles deteciciones falsas de voz en ruidos extraños.
+
 	* ¿Es capaz de sacar alguna conclusión a partir de la evolución de la tasa de cruces por cero?
 
-
+No, en nuestro caso uno de los segmentos de voz tiene aproximadamente los mismos cruces por cero que cuando es silencio.
+Pero en cambio el otro tiene muchisimos. Puede sernos útil si la señal tiene muchos sonidos sonoros ya que este dato aumentará
+significativamente y nos podrá ayudar.
 ### Desarrollo del detector de actividad vocal
 
 - Complete el código de los ficheros de la práctica para implementar un detector de actividad vocal tan
